@@ -4,54 +4,92 @@ import { AppContainer } from 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './appContainer';
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
-import reducers from './reducers'
 
 import Immutable from 'immutable';
 
-// const module_1 = require('./module1.js');
-// const module_3 = require('./module3.js');
+import TodoList from './mobx/TodoList';
+import Todo from './mobx/Todo';
+import TodoView from './mobx/TodoView';
+import TodoListView from './mobx/TodoListView';;
+
+import DevTools from 'mobx-react-devtools'
 
 
-// 测试Immutable
-// debugger;
-let map1 = Immutable.Map({a:1, b:2, c:3});
-console.log(map1.toObject());
-map1.set('b', 50);
-console.log(map1.toObject());
 
-// let entry = (opts) => {
-// 	console.log('entry run1!');
-// 	module_1();
-// 	module_3();
-let store = createStore(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
-	// debugger;
-	ReactDOM.render(
-		<AppContainer>
-			<Provider store={store}>
-				<App />
-			</Provider>
-		</AppContainer>,
-		document.getElementById('app-container')
-	);
+// import {Component} from 'react';
+// import {observer} from "mobx-react";
+// import {observable, computed} from 'mobx';
 
+// class Todo {
+//     id = Math.random();
+//     @observable title = "";
+//     @observable finished = false;
 // }
 
-// window.entry = entry;
-// entry();
+// class TodoList {
+//     @observable todos = [];
+//     @computed get unfinishedTodoCount() {
+//         return this.todos.filter(todo => !todo.finished).length;
+//     }
+// }
 
-// module.exports = entry;
+// @observer
+// class TodoListView extends Component {
+//     render() {
+//         return <div>
+//             <ul>
+//                 {this.props.todoList.todos.map(todo =>
+//                     <TodoView todo={todo} key={todo.id} />
+//                 )}
+//             </ul>
+//             Tasks left: {this.props.todoList.unfinishedTodoCount}
+//         </div>
+//     }
+// }
+
+// const TodoView = observer(({todo}) =>
+//     <li>
+//         <input
+//             type="checkbox"
+//             checked={todo.finished}
+//             onClick={() => todo.finished = !todo.finished}
+//         />{todo.title}
+//     </li>
+// )
+
+
+
+
+const store = new TodoList();
+
+ReactDOM.render(
+    <AppContainer>
+        <div>
+        <TodoListView todoList={store} />
+        <DevTools />
+        </div>
+    </AppContainer>,
+    document.getElementById('app-container')
+);
+
+store.todos.push(
+    new Todo("Get Coffee"),
+    new Todo("Write simpler code")
+);
+// store.todos[0].finished = true;
 
 if (module.hot && module.hot.accept) {
-  module.hot.accept('./appContainer', () => {
+  module.hot.accept('./mobx/TodoListView', () => {
     // If you use Webpack 2 in ES modules mode, you can
     // use <App /> here rather than require() a <NextApp />.
-    let appContainer = require('./appContainer');
+    let appContainer = require('./mobx/TodoListView');
     const NextApp = appContainer.default || appContainer;
     ReactDOM.render(
       <AppContainer>
-         <NextApp />
+        <div>
+        <TodoListView todoList={store} />
+        <DevTools />
+        </div>
       </AppContainer>,
       document.getElementById('app-container')
     );
